@@ -33,16 +33,16 @@ class Square {
       return;
    }
 
-   /** Erases the square from the screen. */
+   // /** Erases the square from the screen. */
    method void erase() {
       do Screen.setColor(false);
       do Screen.drawRectangle(x, y, x + size, y + size);
       return;
    }
 
-    /** Increments the square size by 2 pixels. */
+   //  /** Increments the square size by 2 pixels. */
    method void incSize() {
-      if (((y + size) < 254) & ((x + size) < 510)) {
+      if ((( y + size) < 254) & ((x + size) < 510)) {
          do erase();
          let size = size + 2;
          do draw();
@@ -50,7 +50,7 @@ class Square {
       return;
    }
 
-   /** Decrements the square size by 2 pixels. */
+   // /** Decrements the square size by 2 pixels. */
    method void decSize() {
       if (size > 2) {
          do erase();

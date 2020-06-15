@@ -1,9 +1,9 @@
 import sys
-from os import listdir
-from os.path import isfile, join
+
+import os
 label = 0
 
- 
+instructionCount = 0
 class Parser:
     def executeInstruction(self,instruction):
         instructionCommands = instruction.split(' ')
@@ -124,21 +124,30 @@ class CodeWriter:
         for i in range(int(nLocalVars)):
             self.putDOnStack('0 //initializing local variable')
 
-    def setAsmFileName(self, arg):
-        # self.programName = arg.split('.')[0].split('\\')[0]
-        # self.asmFile = open(self.programName + '/' + self.programName + '.asm', 'w')
-        temp = arg.split('\\')
-        temp.pop(-1)
-        print(temp)
-        self.programName = temp[-1]
-        val = '\\'
-        val = val.join(temp)
-        val +=  '\\' + self.programName + '.asm'
-        self.asmFile = open(val ,'w')
-        print('opened writing file at ' + val)
-        # self.initVm()
+    def setAsmFileName(self, arg, init = False):
+        # splitter = '/'
+        # temp = arg.split(splitter)
+        # temp.pop(-1)
+        # print(temp)
+        # self.programName = temp[-1]
+        # val = splitter
+        # val = val.join(temp)
+        # val +=  splitter + self.programName + '.asm'
+        # self.asmFile = open(val ,'w')
+        filename = arg.split('.')[0] + '.asm'
+        self.asmFile = open(filename, 'w')
+        print('opened writing file at ' + filename)
+        if(init):
+            self.initVm()
     def writeInstruction(self,instructionToWrite):
-        self.asmFile.write(instructionToWrite + '\n')
+        global instructionCount
+        
+        if(instructionToWrite[0] != '/' and instructionToWrite[0] != '('):
+            self.asmFile.write(instructionToWrite + '//' + str(instructionCount) + '\n')
+
+            instructionCount += 1
+        else:
+            self.asmFile.write(instructionToWrite + '\n')
     def end(self):
         self.asmFile.close()
     def loadValue(self):
@@ -245,7 +254,7 @@ class CodeWriter:
         self.writeInstruction('@' + str(index))
         self.writeInstruction('D = A')
         self.writeInstruction(segmentString)
-        if(segmentString == '@3'):
+        if(segmentString == '@3' or segmentString == '@5'):
             self.writeInstruction('D = A + D')
         else:
             self.writeInstruction('D = M + D')
@@ -257,6 +266,8 @@ class CodeWriter:
         self.writeInstruction('@R13')
         self.writeInstruction('A = M')
         self.writeInstruction('M = D')
+    def setProgramName(self, name):
+        self.programName = name
     def executeMemoryInstruction(self,pushPop, segment, index):
         if(pushPop == "push"):
             if(segment == 'constant'):
@@ -307,25 +318,55 @@ class CodeWriter:
                 self.memAccessPop('@3', index)
 
             elif(segment == 'temp'):
-                self.memAccessPop('//', str(int(index) + 5) )
+                self.memAccessPop('@5', str(int(index)) )
             else:
                 self.writeInstruction('//Skipping')
 
 writer = CodeWriter()
 def main():
+    splitter = '\\'
     root = sys.argv[1]
-    writer.setAsmFileName(root + ".asm")
+    print('[ARGUMENT]:', root)
+    asmFilename = 'UNDEFINED'
     parser = Parser()
-    print('opened vmfile directory at ' + root )
-    tempFilenames = [f for f in listdir(root) if isfile(join(root, f))]
-    fileNames = []
-    for f in tempFilenames:
-        if f.split('.')[1] == 'vm':
-            fileNames += [f]
-    print('Found ' + str(len(fileNames)) + ' files: ' + str(fileNames))
-    for f in fileNames:
-        print('[OPENING FILE]: ' + f)
-        vmFile =  open(root + f , 'r')
+    files = []
+    if os.path.isdir(root):
+        print('<DIRECTORY>')
+        if root.endswith(splitter):
+            root = root[0:-1]
+        asmFilename = os.path.basename(root)
+        print('[ASM FILE NAME]: ', asmFilename + '.asm')
+        temp = root.split(splitter)
+        temp += [asmFilename +'.asm']
+        writeFileLoc = splitter
+        writeFileLoc = writeFileLoc.join(temp)
+        print(writeFileLoc)
+        writer.setAsmFileName(writeFileLoc, init = True)
+        writer.setProgramName(asmFilename)
+        for f in os.listdir(root):
+            if ".vm" in f.lower():
+                vmFile = open(root + splitter + f, 'r')
+                for instruction in vmFile:
+                    instruction = instruction.split('/')[0]
+                    instruction = instruction.strip()
+                    if(len(instruction)<1):
+                        continue
+                    if(instruction[0] == '/' and instruction[1] == '/'):
+                        continue
+
+                    writer.writeInstruction('//' + instruction)
+                    parser.executeInstruction(instruction)
+                    print(' \t\t...DONE')
+                print()
+                vmFile.close()
+    else:
+        print("<SINGLE FILE>")
+        directory = root.split(splitter)[0]
+        asmFilename = directory.split('.')[0]
+        writer.setAsmFileName(directory + splitter + asmFilename+ '.asm')
+        writer.setProgramName(asmFilename)
+        print('[ASMFILE]:', directory + splitter + asmFilename+ '.asm')
+        vmFile = open(root, 'r')
         for instruction in vmFile:
             instruction = instruction.split('/')[0]
             instruction = instruction.strip()
@@ -337,10 +378,9 @@ def main():
             writer.writeInstruction('//' + instruction)
             parser.executeInstruction(instruction)
             print(' \t\t...DONE')
+        print()
         vmFile.close()
-    print()
     writer.end()
-   
 
 if __name__ == "__main__":
   main()

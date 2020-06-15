@@ -1,0 +1,95 @@
+/*
+*
+*  SnakeLoc class
+*  Controls the world in which the snake lives
+*
+*/
+
+class SnakeLoc {
+  static char up, right, down, left;
+  field int xMin, yMin, xMax, yMax;
+  
+  // sets the size of the snake world
+  constructor SnakeLoc setSize(int setXMin, int setYMin, int setXMax, int setYMax) {
+    let up    = 131;
+    let right = 132;
+    let down  = 133;
+    let left  = 130;
+
+    let xMin = setXMin;
+    let yMin = setYMin;
+    let xMax = setXMax;
+    let yMax = setYMax;
+
+    return this;
+  }
+
+  //Controls where the head of the snake moves in the x direction to on the screen based on user input
+  method int nextXPosition(int position, char direction) {
+    if (direction = right) {
+      if (position = xMax) {
+        return xMin;
+      } else {
+        return position + 1;
+      }
+    }
+    if (direction = left) {
+      if (position = xMin) {
+        return xMax;
+      } else {
+        return position - 1;
+      }
+    }
+
+    return position;
+  }
+
+  //Controls where the head of the snake moves in the y direction to on the screen based on user input
+  method int nextYPosition(int position, char direction) {
+    if (direction = down) {
+      if (position = yMax) {
+        return yMin;
+      } else {
+        return position + 1;
+      }
+    }
+    if (direction = up) {
+      if (position = yMin) {
+        return yMax;
+      } else {
+        return position - 1;
+      }
+    }
+
+    return position;
+  }
+
+  //get middle of screen y
+  method int getYMid() {
+    return yMax / 2;
+  }
+
+  //used for initializing positions
+  method int getXMax() {
+    return Math.max(xMax, xMin);
+  }
+
+  //sets direction based on key press in snake class
+  function char directionMin() {
+    var char rl, ud;
+    let rl = Math.min(right, left);
+    let ud = Math.min(up, down);
+
+    return Math.min(rl, ud);
+  }
+
+  //Sets direction based on key press in snake class
+  function char directionMax() {
+    return down;
+  }
+
+  //snake will start right
+  function char initialDirection() {
+    return right;
+  }
+}

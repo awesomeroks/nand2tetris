@@ -1,0 +1,40 @@
+//implementation and structure of program was inspired from https://github.com/juxtin/tic-jack-toe
+
+class Main {
+    function void main() {
+        var TTT board;
+        var int location;
+        var boolean playerX, winner;
+        var int key;
+        var boolean draw;
+        let board = TTT.new();
+        do Output.printString("Arrow keys to move the board.");
+        do Output.println();
+
+        let playerX = false;
+        let winner = false;
+        let draw = false;
+        while(~winner & ~draw){
+            do board.move(playerX);
+            let winner = board.isGameOver();
+            let draw = board.isDraw();
+            let playerX = ~playerX;
+        }
+        if(draw){
+            do Output.printString("DRAW!");
+            do Output.println();
+        }
+        else{
+            if(playerX){
+                do Output.printString("O Wins!");
+                do Output.println();
+            }
+            else{
+                do Output.printString("X Wins!");
+                do Output.println();
+            }
+        }
+       
+        return;
+    }
+}

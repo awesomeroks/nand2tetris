@@ -1,0 +1,58 @@
+class TTT{
+
+    field Array values; //0 - unfilled, 1 - X, 2 - O
+    field int xOffset;
+    field int yOffset;
+    constructor TTT new() {
+        let values = Array.new(9);
+        let xOffset = 300;
+        let yOffset = 75;
+        do drawLines();
+        do draw();
+        return this;
+    }
+    method void erase(){
+        return;
+    }
+    method void drawLines(){
+        do Screen.setColor(true);
+        do Screen.drawLine(xOffset, yOffset + 60, xOffset + 90,yOffset + 60);
+        do Screen.drawLine(xOffset , yOffset + 30, xOffset + 90,yOffset + 30);
+        do Screen.drawLine(xOffset + 30, yOffset, xOffset + 30,yOffset + 90);
+        do Screen.drawLine(xOffset + 60, yOffset, xOffset + 60,yOffset + 90);
+        return;
+    }
+    method void draw(){
+        // do Output.moveCursor(10,5);
+        // do Output.printChar('X');
+        do drawX(xOffset + 15, yOffset + 15);
+        do drawO(xOffset + 45, yOffset + 15);
+        
+        return;
+    }
+    method void drawO(int x, int y){
+        do Screen.drawCircle(x, y, 8);
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y, 7);
+        do Screen.setColor(true);
+    return;
+  }
+    method void drawX(int x, int y){
+    var int left, right, top, bottom;
+
+    let left = x - 7;
+    let right = x + 7;
+    let top = y + 7;
+    let bottom = y - 7;
+
+    do Screen.drawLine(left, top, right, bottom);
+    do Screen.drawLine(right, top, left, bottom);
+
+    return;
+  }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

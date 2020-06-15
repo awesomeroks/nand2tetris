@@ -1,0 +1,37 @@
+class UTTTGame {
+
+
+   field Array tttBoards;
+
+   constructor UTTTGame new() {
+      tttBoards = Array.new(9);
+      tttBoards[0] = TTT.new();
+      let i = 0;
+      while (i < 9){
+          tttBoards[i] = TTT.new();
+          let i = i + 1;
+      }
+      do draw();
+      return this;
+    }
+
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method void draw() {
+      let i = 0;
+      while (i < 9){
+          do tttBoards[i].draw();
+          let i = i + 1;
+      }
+   }
+
+   method void erase() {
+      do Screen.setColor(false);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+}

@@ -1,0 +1,53 @@
+class Table {
+
+   //Center of the table
+   field int x, y;
+   
+   
+   //Creates a new table
+   constructor Table new(int aX, int aY) {
+       let x = aX;
+       let y = aY;
+       return this;
+   }
+   
+
+   //Disposes the table
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   //Draws the table. Its center will be in (x, y).   
+   method void draw_table() {
+      do Screen.setColor(true);
+      do Screen.drawRectangle(x + 34 - 54, y + 0 - 54, x + 36 - 54, y + 108 - 54);
+      do Screen.drawRectangle(x + 72 - 54, y + 0 - 54, x + 74 - 54, y + 108 - 54);
+      do Screen.drawRectangle(x + 0 - 54, y + 34 - 54, x + 108 - 54, y + 36 - 54);
+      do Screen.drawRectangle(x + 0 - 54, y + 72 - 54, x + 108 - 54, y + 74 - 54);
+      return;
+   }
+   
+   //Draws the player movement. For player 1, a circle will be drawn, other else a cross will be drawn.  
+   method void draw_move(int position, int player) {
+      var int tX, tY, quotient;
+      
+      let quotient = Math.divide(position, 3);
+      let tX = (position - (quotient * 3)) * 38 + 16 + x - 54;
+      let tY = (quotient * 38) + 16 + y - 54;
+      
+      if (player = 1) {
+          do Screen.drawCircle(tX, tY, 10);
+      } else {
+          do Screen.drawLine(tX - 10, tY - 9, tX + 10, tY + 9);
+          do Screen.drawLine(tX - 10, tY - 10, tX + 10, tY + 10);
+          do Screen.drawLine(tX - 10, tY - 11, tX + 10, tY + 11);
+
+          do Screen.drawLine(tX + 10, tY - 9, tX - 10, tY + 9);
+          do Screen.drawLine(tX + 10, tY - 10, tX - 10, tY + 10);
+          do Screen.drawLine(tX + 10, tY - 11, tX - 10, tY + 11);
+      } 
+      return; 
+   }
+}  
+

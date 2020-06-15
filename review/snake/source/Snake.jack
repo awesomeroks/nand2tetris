@@ -1,0 +1,128 @@
+/*
+*
+*  This is the snake class
+*  Creates a new snake and controls its movements
+*
+*/
+
+class Snake {
+  static SnakeLoc loc;
+  static boolean exit, grow;
+  static char Q, E, P;
+
+  field int timeStep;
+  field int length, velocity, index;
+  field Array positions;
+  field char direction;
+
+  //Creates a new snake with velocity of the snake, a location and whether we want the snake to grow
+  constructor Snake new(int snLength, int setVelocity, SnakeLoc setLoc, boolean setGrow) {
+    let length   = snLength;
+    let velocity = (11 - setVelocity) * 2; 
+    let loc      = setLoc;
+    let index    = 0;
+
+
+    let exit   = false;
+    let Q      = 81;
+    let E      = 69;
+    let P      = 80;
+
+    let grow = setGrow;
+
+    let positions = Array.new(length);
+    let direction = SnakeLoc.initialDirection();
+
+    do initPositions();
+    do move();
+
+    return this;
+  }
+
+  // cleanup method for memory of SnakeLoc
+  method void dispose() {
+    do Memory.deAlloc(loc);
+    do positions.dispose();
+
+    return;
+  }
+
+  //This run function has the loop that continuously monitors for key presses to change direction of the snake
+  method void run() {
+    var char key;
+
+    while (~exit) {
+
+      while (key = 0) {
+        let key = Keyboard.keyPressed();
+        do move();
+      }
+
+      if ((key > (SnakeLoc.directionMin() - 1)) & (key < (SnakeLoc.directionMax() + 1))) {
+        let direction = key;
+      }
+      if ((key = Q) | (key = E)) {
+        do dispose();
+        let exit = true;
+      }
+
+      while (~(key = 0)) {
+        let key = Keyboard.keyPressed();
+        do move();
+      }
+    }
+
+    return;
+  }
+
+  //Controls movement of the snake
+  method void move() {
+    var Array tail, head, newHead;
+
+    let tail = positions[incrementedIndex()];
+    let head = positions[index];
+    let newHead = tail;
+
+    do Screen.setColor(false);
+    do Screen.drawPixel(tail[0], tail[1]);
+
+    let newHead[0] = loc.nextXPosition(head[0], direction);
+    let newHead[1] = loc.nextYPosition(head[1], direction);
+
+    do Screen.setColor(true);
+    do Screen.drawPixel(newHead[0], newHead[1]);
+
+    let index = incrementedIndex();
+
+    do Sys.wait(velocity);
+
+    return;
+  }
+
+  //Initialize positions based on snakeLoc values
+  method void initPositions() {
+    var int i;
+    var Array coordinate;
+
+    while (i < length) {
+      let coordinate = Array.new(2);
+      let coordinate[0] = loc.getXMax();
+      let coordinate[1] = loc.getYMid();
+
+      let positions[i] = coordinate;
+
+      let i = i + 1;
+    }
+
+    return;
+  }
+
+  //increments index 
+  method int incrementedIndex() {
+    if ((index + 1) = length) {
+      return 0;
+    } else {
+      return index + 1;
+    }
+  }
+}

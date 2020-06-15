@@ -1,0 +1,294 @@
+class TTT{
+
+    field int xOffset;
+    field int yOffset;
+    field int offset;
+    field Array playGrid;
+
+    constructor TTT new(){
+        let xOffset = 150;
+        let yOffset = 32;
+        do drawGrid();
+        let playGrid = Array.new(9);
+        return this;
+    }
+    method int getCorrectSelection(int selected){
+        if((selected < 9) & (selected > -1)){
+            return selected;
+        }
+        else{
+            if(selected < 0){
+                        return 0;
+            }
+            else{
+                if(selected > 8){
+                    return 8;
+                }
+            }
+        }
+        return 4;
+    }
+    method int move(boolean player){
+        var int key;
+        var int selection;
+        do drawGrid();
+        while(true){
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            if(key = 132){ // right
+                do eraseMarker(selection);
+                let selection = getCorrectSelection(selection + 1);
+                do drawMarker(selection);
+            }
+            if(key = 130){ // left
+                do eraseMarker(selection);
+                let selection = getCorrectSelection(selection - 1);
+                do drawMarker(selection);
+            }
+            if(key = 131){ // up
+                do eraseMarker(selection);
+                let selection = getCorrectSelection(selection - 3);
+                do drawMarker(selection);
+            }
+            if(key = 133){ // down
+                do eraseMarker(selection);
+                let selection = getCorrectSelection(selection + 3);
+                do drawMarker(selection);
+            }
+            if(key = 128){ // enter
+                do eraseMarker(selection);
+                if(isCorrectSelection(selection)){
+                    if(player){
+                        let playGrid[selection] = 1;
+                        do drawX(selection);
+                    }else{
+                        let playGrid[selection] = -1;
+                        do drawO(selection);
+                    }
+                    return selection;
+                }else{
+                    do drawMarker(selection);
+                }
+            }
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+        }
+        return 0;
+    }
+
+    method int isCorrectSelection(int selection){
+        if(~(playGrid[selection] = -1) & ~(playGrid[selection] = 1)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    method boolean isGameOver(){
+        //total of 8 victory cases
+        if((checkLineXO(0,1,2)) |
+        (checkLineXO(3,4,5)) |
+        (checkLineXO(6,7,8)) |
+        (checkLineXO(0,3,6)) |
+        (checkLineXO(1,4,7)) |
+        (checkLineXO(2,5,8)) |
+        (checkLineXO(0,4,8)) |
+        (checkLineXO(2,4,6))){
+            return true;
+        }
+        return false;
+    }
+    method boolean checkLineXO(int a, int b, int c){
+        var int x, y, z;
+        let x = a;
+        let y = b;
+        let z = c;
+        let a = playGrid[a];
+        let b = playGrid[b];
+        let c = playGrid[c];
+        if((a = 0) | (b = 0) | (c = 0)){
+            return false;
+        }
+        else{
+            if((a = b) & (b = c)){
+                do drawWinLine(x,y,z);
+                return true;
+            }
+        }
+        return false;
+    }
+    method void eraseMarker(int selected){
+        let selected = getCorrectSelection(selected);
+        do Screen.setColor(false);
+        do drawMarker(selected);
+        do Screen.setColor(true);
+        return;
+    }
+    method void drawO(int selected){
+        var int localXOffset;
+        var int localYOffset;
+        var int x,y;
+        let selected = getCorrectSelection(selected);
+        let localXOffset = 150;
+        let localYOffset = 0;
+        if((selected < 3) ){
+            let x = localXOffset + (selected*64) + 30;
+            let y = localYOffset + (64);
+        }
+        else{
+            if((selected > 2) & (selected < 6) ){
+                let selected = selected - 3;
+                let x = localXOffset + (selected*64) + 30;
+                let y = localYOffset + (2*64);
+            }
+            else{
+                if(selected > 5){
+                    let selected = selected - 6;
+                    let x = localXOffset + (selected*64) + 30;
+                    let y = localYOffset + (3*64);
+                }
+            }
+        }
+        do Screen.drawCircle(x, y, 20);
+        do Screen.setColor(false);
+        do Screen.drawCircle( x, y, 19);
+        do Screen.setColor(true);
+        return;
+    }
+    method void drawX(int selected){
+        var int x,y;
+        var int localXOffset;
+        var int localYOffset;
+        let selected = getCorrectSelection(selected);
+        let localXOffset = 150;
+        let localYOffset = 0;
+        if((selected < 3) ){
+            let x = localXOffset + (selected*64) + 30;
+            let y = localYOffset + (64);
+        }
+        else{
+            if((selected > 2) & (selected < 6) ){
+                let selected = selected - 3;
+                let x = localXOffset + (selected*64) + 30;
+                let y = localYOffset + (2*64);
+            }
+            else{
+                if(selected > 5){
+                    let selected = selected - 6;
+                    let x = localXOffset + (selected*64) + 30;
+                    let y = localYOffset + (3*64);
+                }
+            }
+        }
+        do Screen.drawLine(x - 15, y + 15, x + 15 , y - 15);
+        do Screen.drawLine(x + 15, y + 15,x - 15, y - 15);
+        return;
+    }
+    method void drawMarker(int selected){
+        var int left, right, top, bottom;
+        var int x, y;
+        var String str;
+        var int localXOffset;
+        var int localYOffset;
+        let selected = getCorrectSelection(selected);
+        let localXOffset = 150;
+        let localYOffset = 0;
+        if((selected < 3) ){
+            let x = localXOffset + (selected*64) + 30;
+            let y = localYOffset + (64);
+        }
+        else{
+            if((selected > 2) & (selected < 6) ){
+                let selected = selected - 3;
+                let x = localXOffset + (selected*64) + 30;
+                let y = localYOffset + (2*64);
+            }
+            else{
+                if(selected > 5){
+                    let selected = selected - 6;
+                    let x = localXOffset + (selected*64) + 30;
+                    let y = localYOffset + (3*64);
+                }
+            }
+        }
+        let left = x - 22;
+        let right = x + 22;
+        let top = y + 22;
+        let bottom = y - 22;
+        do Screen.drawLine(left, top, left, bottom);
+        do Screen.drawLine(left, top,right, top);
+        do Screen.drawLine(right, top,right, bottom);
+        do Screen.drawLine(right, bottom, left, bottom);
+        return;
+    }
+    method void drawGrid(){
+        do Screen.drawLine(xOffset + 64, yOffset, xOffset + 64, yOffset + 192);
+        do Screen.drawLine(xOffset + 128, yOffset,xOffset +  128, yOffset + 192);
+        do Screen.drawLine(xOffset, yOffset + 64, xOffset + 192, yOffset + 64);
+        do Screen.drawLine(xOffset, yOffset + 128,xOffset +  192, yOffset + 128);
+        return;
+    }
+    method void drawLinesBetweenTwoSelections(int a , int b){
+        var int x, y, x1, y1;
+        var String str;
+        var int localXOffset;
+        var int localYOffset;
+        let localXOffset = 150;
+        let localYOffset = 0;
+        if((a < 3) ){
+            let x = localXOffset + (a*64) + 30;
+            let y = localYOffset + (64);
+        }
+        else{
+            if((a > 2) & (a < 6) ){
+                let a = a - 3;
+                let x = localXOffset + (a*64) + 30;
+                let y = localYOffset + (2*64);
+            }
+            else{
+                if(a > 5){
+                    let a = a - 6;
+                    let x = localXOffset + (a*64) + 30;
+                    let y = localYOffset + (3*64);
+                }
+            }
+        }
+        if((b < 3) ){
+            let x1 = localXOffset + (b*64) + 30;
+            let y1= localYOffset + (64);
+        }
+        else{
+            if((b > 2) & (b < 6) ){
+                let b = b - 3;
+                let x1 = localXOffset + (b*64) + 30;
+                let y1 = localYOffset + (2*64);
+            }
+            else{
+                if(b > 5){
+                    let b = b - 6;
+                    let x1 = localXOffset + (b*64) + 30;
+                    let y1 = localYOffset + (3*64);
+                }
+            }
+        }
+        do Screen.drawLine(x1, y1, x, y);
+        return;
+    }
+    method boolean isDraw(){
+        var int x ;
+        let x = 0;
+        while(x<9){
+            if(playGrid[x] =  0){
+                return false;
+            }
+            let x = x + 1;
+        }
+        return true;
+    }
+    method void drawWinLine(int a, int b, int c){
+        do drawLinesBetweenTwoSelections(a, b);
+        do drawLinesBetweenTwoSelections(b, c);
+        return;
+    }
+}

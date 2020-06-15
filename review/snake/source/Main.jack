@@ -1,0 +1,27 @@
+/*
+*
+*  Classic snake game
+*  Consists of the snake class that controls movements and snakeloc that controls where the snake shows up on the screen
+*  
+*/
+
+
+class Main {
+  function void main() {
+    var Snake snake;
+    var SnakeLoc loc;
+    var int length;
+    //Sets up the size of the enclosure for the snake
+    let loc = SnakeLoc.setSize(0, 0, 511, 255);
+
+    let length = Keyboard.readInt("How long would you like the snake?");
+
+    do Screen.clearScreen();
+
+    //Creates a new snake and runs the program
+    let snake = Snake.new(length, 10, loc, true);
+    do snake.run();
+
+    return;
+  }
+}
